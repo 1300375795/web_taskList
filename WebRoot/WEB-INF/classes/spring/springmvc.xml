@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/springI-aop.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- 现在想来的工作流程1.前端控制器接受请求然后由于里面配置的下面这个东西 那么所有的action后缀的请求都会到我们 这个配置文件中找相应的其他的映射器、适配器 
+		处理器、视图解析器等 <init-param> <param-name>contextConfigLocation</param-name> <param-value>classpath:springmvc.xml</param-value> 
+		</init-param> 而下面的BeanNameUrlHandlerMapping映射器的话会根据请求的地址让处理器 适配器找到相应的处理器然后处理，然后适 
+		配器返回一个ModelAndView给前端控制器 然后前端控制器再返回给相应的页面做渲染然后载响应回去，而如果是 SimpleUrlHandlerMapping这个简单url映射器的话那么就会根据前端控制器的id然后找到对应的 
+		props里面跟key的 url地址相同的那个pro然后根据标签中间的那个值(处理器的对应的id)找到相对应的处理器，然后执行相应的操作 (返回ModelAndView等)注意多个映射器可以共存 -->
+
+	<!-- 下面的这个则是配置注解的处理器映适配器以及注解的处理器映射器 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean> 
+		<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean> -->
+
+	<!-- 如果使用了下面的这个那么就可以取代上面的那两个注解的适配器以及映射器而且下面的这个还绑定了很多其他的方法 例如json转换解析器就默认加载了 --><!-- 下面的validator是配置校验信息的指向下面的 一个id为validator的bean -->
+	<mvc:annotation-driven validator="validator"></mvc:annotation-driven>
+
+	<!-- 下面的这个是对静态资源的配置这样的话就可以访问静态资源 -->
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/img/" mapping="/img/**"></mvc:resources>
+
+	<!-- 拦截器的配置顺序执行这些个拦截器 -->
+	<!-- <mvc:interceptors>
+		<mvc:interceptor>
+		拦截所有的url路径包括子路径 
+			<mvc:mapping path="/**"/>
+			<bean class="com.ydg.ssm.interceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+
+	<!-- 下面的这个则是配置注解处理器 -->
+	<!-- <bean class="com.ydg.ssm.controller.ItemController3"></bean> -->
+	<!-- 可以使用扫描的方式自动解析那些个标签这样的话就不需要配置处理器的bean了 -->
+	<context:component-scan base-package="com.ydg.web_taskList.user.controller"></context:component-scan>
+
+	<!-- 配置视图解析器下面这个是支持jsp页面的默认使用了jstl标签 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置前缀，转发的时候不需要写这一个前缀了 -->
+		<property name="prefix" value="/WEB-INF/jsps/"></property>
+		<!-- 配置后缀，转发的时候不需要写这一个后缀了 -->
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 校验器的配置 -->
+	<!-- 国际化配置 -->    
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" />
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:CustomValidatorMessage</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="true" />
+    </bean>
+    <!-- 注册验证器 -->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+        <!-- 这里配置将使用上面国际化配置的messageSource -->
+        <property name="validationMessageSource" ref="messageSource" />
+    </bean>
+
+
+	<!-- 全局的异常处理器的配置 -->
+	<bean class="com.ydg.web_taskList.exception.ExceptionResolver"></bean>
+
+	<!-- 表单上传文件配置,注意不要跟org.springframework.web.multipart.commons.CommonsMultipartFile混淆 -->
+	<!-- <bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">最大的上传文件的大小
+			<value>5242880</value>
+		</property>
+	</bean> -->
+</beans>

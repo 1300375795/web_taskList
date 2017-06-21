@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!--下面这个是设置相关的别名,下面用到的这种方法是批量设置,被注释起来的则是单个的 -->
+	<typeAliases>
+		<!--<typeAlias type="com.ydg.mybatis.first.User"></typeAlias> -->
+		<!-- 下面是配置了一个po包里面的别名，需要其他包的话那么可以再配上其他的包 -->
+		<package name="com.ydg.web_taskList"></package>
+	</typeAliases>
+	<!-- 由于整合了spring所以不需要配置这个了直接会扫描<mappers><mapper/></mappers> -->
+</configuration>
